@@ -5,14 +5,8 @@ export default function AuthReset() {
         <p className="font-medium text-2xl">Reset Password</p>
       </div>
       <div className="px-8 space-y-6">
-        <div>
-          <InputLabel title="Password" />
-          <Input />
-        </div>
-        <div>
-          <InputLabel title="Confirm Password" />
-          <Input />
-        </div>
+        <Input title="Password" />
+        <Input title="Confirm Password" />
       </div>
       <div className="px-8 space-y-6 pt-4">
         <div className="flex items-center space-x-2">
@@ -28,7 +22,9 @@ export default function AuthReset() {
   );
 }
 
-const Input = () => <input className="border rounded w-full h-9" />;
-const InputLabel = ({ title }) => (
-  <p className="text-gray-500 text-sm">{title}</p>
+const Input = ({ title }) => (
+  <div>
+    <p className="text-gray-500 text-sm">{title}</p>
+    <input className="border rounded w-full h-9" />
+  </div>
 );

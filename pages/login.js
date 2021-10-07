@@ -7,14 +7,8 @@ export default function Login() {
         <p className="font-medium text-2xl">Login</p>
       </div>
       <div className="px-8 space-y-6">
-        <div>
-          <InputLabel title="Email" />
-          <Input />
-        </div>
-        <div>
-          <InputLabel title="Password" />
-          <Input />
-        </div>
+        <Input title="Email" />
+        <Input title="Password" />
       </div>
       <div className="px-8 space-y-6 pt-4">
         <div className="flex items-center space-x-2">
@@ -30,17 +24,14 @@ export default function Login() {
       <div className="pt-6 space-y-2">
         <p className="text-center text-sm text-gray-700">
           Forgot password?
-          <span>
-            {" "}
-            <Link href="/forgot" className="text-successGreen">
-              Reset Password
-            </Link>
-          </span>
+          <Link href="/forgot" className="text-successGreen">
+            <a className="text-successGreen"> Reset Password</a>
+          </Link>
         </p>
         <p className="text-center text-sm text-gray-700">
-          Do not have an account??
+          Do not have an account?
           <Link href="/register">
-            <a className="text-successGreen">Register</a>
+            <a className="text-successGreen"> Register</a>
           </Link>
         </p>
       </div>
@@ -48,7 +39,9 @@ export default function Login() {
   );
 }
 
-const Input = () => <input className="border rounded w-full h-9" />;
-const InputLabel = ({ title }) => (
-  <p className="text-gray-500 text-sm">{title}</p>
+const Input = ({ title }) => (
+  <div>
+    <p className="text-gray-500 text-sm">{title}</p>
+    <input className="border rounded w-full h-9" />
+  </div>
 );

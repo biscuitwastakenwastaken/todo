@@ -7,26 +7,11 @@ export default function Register() {
         <p className="font-medium text-2xl">Register</p>
       </div>
       <div className="px-8 space-y-6">
-        <div>
-          <InputLabel title="First Name" />
-          <Input />
-        </div>
-        <div>
-          <InputLabel title="Last Name" />
-          <Input />
-        </div>
-        <div>
-          <InputLabel title="Email" />
-          <Input />
-        </div>
-        <div>
-          <InputLabel title="Password" />
-          <Input />
-        </div>
-        <div>
-          <InputLabel title="Confirm Password" />
-          <Input />
-        </div>{" "}
+        <Input title="First Name" />
+        <Input title="Last Name" />
+        <Input title="Email" />
+        <Input title="Password" />
+        <Input title="Confirm Password" />
       </div>
       <div className="px-8 space-y-6 pt-4">
         <div className="flex items-center space-x-2">
@@ -39,19 +24,18 @@ export default function Register() {
         </button>
         <p className="text-center text-sm text-gray-700">
           Already have an account?
-          <span>
-            {" "}
-            <Link href="/login" className="text-successGreen">
-              Login
-            </Link>
-          </span>
+          <Link href="/login" className="text-successGreen">
+            <a className="text-successGreen"> Login</a>
+          </Link>
         </p>
       </div>
     </>
   );
 }
 
-const Input = () => <input className="border rounded w-full h-9" />;
-const InputLabel = ({ title }) => (
-  <p className="text-gray-500 text-sm">{title}</p>
+const Input = ({ title }) => (
+  <div>
+    <p className="text-gray-500 text-sm">{title}</p>
+    <input className="border rounded w-full h-9" />
+  </div>
 );
