@@ -1,10 +1,19 @@
 import Head from "next/head";
 import { useAuth } from "@/utils/auth";
 import Router from "next/router";
+import Loading from "@/components/Loading";
+import LoginPage from "@/components/Auth/LoginPage";
 
 export default function Home() {
-  const { user, signout } = useAuth();
-  console.log(user);
+  const { user, signout, loading } = useAuth();
+  // console.log(user);
+
+  if (loading) {
+    return <Loading />;
+  }
+  if (!user) {
+    return <LoginPage />;
+  }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Head>
@@ -19,7 +28,7 @@ export default function Home() {
 
         <p className="mt-3 text-2xl  ">
           <code
-            onClick={() => (user ? signout() : Router.push("/login"))}
+            onClick={() => signout()}
             className="p-3 font-mono text-lg bg-gray-100 rounded-md"
           >
             {user ? "Logout" : "login"}

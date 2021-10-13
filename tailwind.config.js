@@ -8,6 +8,7 @@ module.exports = {
         successGreen: "#9CE27C",
         warningYellow: "#E0E27C",
         negativeRed: "#E27C7C",
+        disabledGrey: "#ABABAB",
       },
     },
   },
