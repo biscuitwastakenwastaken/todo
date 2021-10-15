@@ -12,4 +12,6 @@ export const errorCodes = {
   "auth/invalid-credential": "Email or password is incorrect",
   "auth/user-mismatch": "You are trying to log in to the wrong account",
   "auth/requires-recent-login": "Action requires recent login",
+  "auth/quota-exceeded": "Email quota exceeded",
+  "auth/account-not-verified": "You have not verified your account.",
 };

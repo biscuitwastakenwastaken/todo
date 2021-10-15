@@ -11,7 +11,7 @@ const Container = ({ children }) => (
 );
 
 const Spinner = () => (
-  <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-400" />
+  <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-successGreen" />
 );
 
 export default Loading;

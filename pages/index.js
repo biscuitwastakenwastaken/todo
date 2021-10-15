@@ -1,94 +1,142 @@
-import Head from "next/head";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/utils/auth";
-import Router from "next/router";
 import Loading from "@/components/Loading";
 import LoginPage from "@/components/Auth/LoginPage";
+import Layout from "@/components/Layout";
+import Header from "@/components/Header";
+import { PageContainer } from "@/components/pageUtils";
+import { BsPlus } from "react-icons/bs";
 
+const tabs = ["programs", "analytics"];
 export default function Home() {
-  const { user, signout, loading } = useAuth();
+  const { user, signout, loading, setError, sendVerificationEmail, authUser } =
+    useAuth();
+
+  const [activeTab, setActive] = useState("programs");
+  const [search, setSearch] = useState("");
+
+  const tabHandler = () => {
+    if (activeTab === "programs") {
+      setActive("analytics");
+      return true;
+    }
+    setActive("programs");
+  };
   // console.log(user);
+  // console.log(authUser);
 
   if (loading) {
     return <Loading />;
   }
-  if (!user) {
+  if (!authUser) {
+    return <LoginPage />;
+  }
+  if (!authUser.emailVerified) {
+    useEffect(() => {
+      setError("You have not verified your account.");
+      // sendVerificationEmail(authUser);
+    }, []);
     return <LoginPage />;
   }
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <Layout>
+      <Header title="My Dashboard" subtitle="Home" />
 
-      <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to {user?.email || "Next.js!"}
-        </h1>
+      <PageContainer>
+        <Search search={search} setSearch={setSearch} />
+        <Tabs tabs={tabs} activeTab={activeTab} onClick={() => tabHandler()} />
 
-        <p className="mt-3 text-2xl  ">
-          <code
-            onClick={() => signout()}
-            className="p-3 font-mono text-lg bg-gray-100 rounded-md"
-          >
-            {user ? "Logout" : "login"}
-          </code>
-        </p>
-
-        <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="p-6 mt-6 text-left border w-96 rounded-xl hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className="flex items-center justify-center w-full h-24 border-t">
-        <a
-          className="flex items-center justify-center"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <img src="/vercel.svg" alt="Vercel Logo" className="h-4 ml-2" />
-        </a>
-      </footer>
-    </div>
+        {activeTab === "programs" ? (
+          <div>
+            <div className="space-y-8 pt-8">
+              <ListItems title="" />
+              <ListItems title="Your exercises" />
+              <ListItems title="Paid programs" />
+              <ListItems title="Saved" />
+              <ListItems title="Your followed coaches" />
+            </div>
+          </div>
+        ) : (
+          <div>
+            <p className="pt-8">cool analytics</p>
+          </div>
+        )}
+      </PageContainer>
+    </Layout>
   );
 }
+
+const Search = ({ search, setSearch }) => (
+  <div class="border-2 py-1 px-3 flex justify-between">
+    <input
+      class="flex-grow outline-none "
+      type="text"
+      placeholder="Search something cool..."
+      value={search}
+      onChange={(event) => setSearch(event.target.value)}
+      name="search"
+      id="search"
+    />
+    <span onClick={() => alert(search)}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 text-disabledGrey hover:text-successGreen transition duration-100 cursor-pointer"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        />
+      </svg>
+    </span>
+  </div>
+);
+
+const Tabs = ({ onClick, activeTab, tabs }) => (
+  <div className="flex items-center space-x-4 pt-6">
+    {tabs.map((tab, tabIndex) => (
+      <p
+        key={tabIndex}
+        onClick={() => (activeTab === tab ? null : onClick())}
+        className={`${
+          activeTab === tab ? "border-black" : "border-transparent"
+        } hover:bg-opacity-50 text-2xl capitalize cursor-pointer border-b `}
+      >
+        {tab}
+      </p>
+    ))}
+  </div>
+);
+const ListTitle = ({ title }) => (
+  <div className="text-sm sm:text-base font-medium pb-1">
+    <p>{title}</p>
+  </div>
+);
+
+const AddListItem = ({ title }) => (
+  <div className="bg-white border-2 cursor-pointer border-black h-16 w-16 md:h-24 md:w-24 flex-shrink-0 flex items-center text-center justify-center text-3xl">
+    <BsPlus />
+  </div>
+);
+
+const ListItem = ({ title }) => (
+  <div className="bg-disabledGrey h-16 w-16 md:h-24 md:w-24 cursor-pointer hover:opacity-50 flex-shrink-0" />
+);
+
+const ListItems = ({ title, items }) => (
+  <div>
+    <ListTitle title={title} />
+    <div className="flex space-x-4">
+      <AddListItem />
+      <div className="flex space-x-4 overflow-x-scroll no-scrollbar">
+        {[...Array(20).keys()].map((item, itemIndex) => (
+          <ListItem />
+        ))}
+      </div>
+    </div>
+  </div>
+);

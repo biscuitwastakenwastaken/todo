@@ -20,12 +20,17 @@ export default function AuthReset() {
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = (event) => {
-    if (passwordOne === passwordTwo) {
-      const credential = auth.emailAuthProv(auth.user.email, oldPassword);
-      auth.reauthenticateUser(credential, passwordOne);
-    } else auth.setError("Password do not match");
-
     event.preventDefault();
+
+    if (!oldPassword) {
+      auth.setError("Please enter current password");
+      return true;
+    }
+    if (passwordOne !== passwordTwo) {
+      auth.setError("Password do not match");
+      return true;
+    }
+    auth.reauthenticateUser(credential, passwordOne);
   };
 
   return (

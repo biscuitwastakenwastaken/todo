@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import Router from "next/router";
-import cookie from "js-cookie";
 import { auth } from "@/utils/firebase";
 import { errorCodes } from "@/utils/errorCodes";
 import {
@@ -39,19 +38,29 @@ function useProvideAuth() {
       //   createUser(user.uid, userWithoutToken);
       setUser(user);
 
-      cookie.set("biscuit-auth", true, {
-        expires: 1,
-      });
+      // cookie.set("biscuit-auth", true, {
+      //   expires: 1,
+      // });
 
       setLoading(false);
       return user;
     } else {
       setUser(false);
-      cookie.remove("biscuit-auth");
+      // cookie.remove("biscuit-auth");
 
       setLoading(false);
       return false;
     }
+  };
+
+  const handleError = (error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // console.log(error);
+    // console.log(errorCode);
+    // console.log(errorMessage);
+    setLoading(false);
+    setError(errorCodes[errorCode] || errorMessage);
   };
 
   const createUser = (email, password) => {
@@ -61,15 +70,22 @@ function useProvideAuth() {
       .then((authUser) => {
         console.log(authUser);
         sendEmailVerification(auth.currentUser);
-        signinWithEmail(email, password);
+        signout();
+        Router.push("/");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        handleError(error);
+      });
+  };
 
-        console.log(errorCode);
-        console.log(errorMessage);
-        setError(errorCodes[errorCode] || errorMessage);
+  const sendVerificationEmail = (authUser) => {
+    sendEmailVerification(authUser)
+      .then((response) => {
+        console.log(response);
+        console.log("email sent");
+      })
+      .catch((error) => {
+        handleError(error);
       });
   };
 
@@ -78,18 +94,13 @@ function useProvideAuth() {
     setError(null);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        console.log(userCredential);
+        console.log(userCredential.user);
         const user = userCredential.user;
         handleUser(user);
         // Router.push("/");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(error);
-        console.log(errorCode);
-        console.log(errorMessage);
-        setError(errorCodes[errorCode] || errorMessage);
+        handleError(error);
       });
   };
 
@@ -101,9 +112,7 @@ function useProvideAuth() {
         handleUser(false);
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        setError(errorCodes[errorCode] || errorMessage);
+        handleError(error);
       });
   };
 
@@ -111,19 +120,20 @@ function useProvideAuth() {
     setError(null);
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        console.log("password reset email sent");
+        // console.log("password reset email sent");
         Router.push("/");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-        setError(errorCodes[errorCode] || errorMessage);
+        handleError(error);
       });
   };
 
   const emailAuthProv = (email, password) => {
-    const credential = EmailAuthProvider.credential(email, password);
+    const credential = EmailAuthProvider.credential(email, password).catch(
+      (error) => {
+        handleError(error);
+      }
+    );
     return credential;
   };
 
@@ -131,17 +141,12 @@ function useProvideAuth() {
     setError(null);
     reauthenticateWithCredential(auth.currentUser, credential)
       .then(() => {
-        console.log("user authenticated");
-
         if (newPassword) {
           passwordUpdate(newPassword);
         }
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-        setError(errorCodes[errorCode] || errorMessage);
+        handleError(error);
       });
   };
 
@@ -149,15 +154,14 @@ function useProvideAuth() {
     setError(null);
     updatePassword(auth.currentUser, newPassword)
       .then(() => {
-        console.log("passwordUpdated");
+        // console.log("passwordUpdated");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-        setError(errorCodes[errorCode] || errorMessage);
+        handleError(error);
       });
   };
+
+  const authUser = auth.currentUser;
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, handleUser);
@@ -178,6 +182,7 @@ function useProvideAuth() {
     user,
     loading,
     error,
+    sendVerificationEmail,
     setError,
     createUser,
     signinWithEmail,
@@ -185,6 +190,7 @@ function useProvideAuth() {
     sendPasswordReset,
     reauthenticateUser,
     emailAuthProv,
+    authUser,
     passwordUpdate,
   };
 }
@@ -199,5 +205,6 @@ const formatUser = async (user) => {
     photoUrl: user.photoURL,
     // stripeRole: await getStripeRole(),
     token,
+    emailVerified: user.emailVerified,
   };
 };

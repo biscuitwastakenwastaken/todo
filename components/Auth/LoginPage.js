@@ -20,10 +20,15 @@ export default function Login() {
 
   const onSubmit = (event) => {
     event.preventDefault();
-
-    password
-      ? auth.signinWithEmail(email, password)
-      : auth.setError("Please enter a password");
+    if (!email) {
+      auth.setError("Please enter email");
+      return true;
+    }
+    if (!password) {
+      auth.setError("Please enter password");
+      return true;
+    }
+    auth.signinWithEmail(email, password);
   };
 
   return (
