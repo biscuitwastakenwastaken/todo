@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { useAuth } from "@/utils/auth";
+import Router from "next/router";
+// import { useAuth } from "@/utils/auth";
 // import Logo from "/public/logo.svg";
 
 const navItems = [
@@ -21,7 +22,6 @@ const navItems = [
 ];
 
 function NavBar() {
-  const { signout } = useAuth();
   return (
     <header className="w-full bg-white border-b border-gray-200">
       <div className="border-t-[5px] border-successGreen" />
@@ -42,7 +42,7 @@ function NavBar() {
         </div>
         {/* Header: Right side */}
         {/* Default */}
-        <div onClick={() => signout()}>
+        <div onClick={() => Router.push("/profile")}>
           {false ? (
             <div className="object-cover rounded-full w-8 h-8 cursor-pointer bg-successGreen" />
           ) : (
