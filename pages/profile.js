@@ -9,86 +9,45 @@ const Profile = () => {
     <Layout>
       <PageContainer>
         {/* MOBILE */}
-        <div className="sm:hidden">
-          <div className="flex flex-col items-center justify-center">
-            <ProfileName name="Matthew Mayfield" />
-            <Default url="/me.png" />
-            <SocialLink link="@gainthetics" />
-            <div className="space-y-3 py-1 w-full">
-              <UserInfoContainer>
-                <ProfileData title="Programs" value="5" />
-                <ProfileData title="Programs" value="5" />
-                <ProfileData title="Programs" value="5" />
-                <ProfileData title="Programs" value="5" />
-                <ProfileData title="Programs" value="5" />
-                <ProfileData title="Programs" value="5" />
-              </UserInfoContainer>
-              <UserInfoContainer>
-                <ProfileData title="Programs" value="5" />
-                <ProfileData title="Programs" value="5" />
-                <ProfileData title="Programs" value="5" />
-                <ProfileData title="Programs" value="5" />
-                <ProfileData title="Programs" value="5" />
-                <ProfileData title="Programs" value="5" />
-              </UserInfoContainer>
-            </div>
-            <FollowButton />
 
-            <p className="text-xs text-center py-2">
-              Lorem Ipsum is simply dummy text of the printing and type setting
-              industry.
-            </p>
-          </div>
-          <div className="space-y-4 pt-4">
-            <ListItems title="Programs" />
-            <ListItems title="Certifications" />
-          </div>
-          {/* <div className="flex items-center justify-between">
-            <ProfileName name="Matthew Mayfield" />
-            <FollowButton />
-          </div>
+        <div className="flex flex-col items-center justify-center w-full mx-auto">
+          <ProfileName name="Matthew Mayfield" />
           <SocialLink link="@gainthetics" />
+          <Default url="/me.png" />
 
-          <div className="flex items-center justify-between space-x-4">
-            <Default url="/me.png" />
-            <UserInfoContainer>
-              <ProfileData title="Programs" value="5" />
-              <ProfileData title="Programs" value="5" />
-              <ProfileData title="Programs" value="5" />
-              <ProfileData title="Programs" value="5" />
-              <ProfileData title="Programs" value="5" />
-              <ProfileData title="Programs" value="5" />
-            </UserInfoContainer>
+          <FollowButton />
+          <div className="space-y-3 py-1 w-full mt-4">
+            <div className="flex flex-wrap items-center justify-center space-x-2">
+              <ProfileData title="Programs" value="456k" />
+              <ProfileData title="Completed" value="126k" />
+              <ProfileData title="Following" value="879k" />
+              <ProfileData title="Followers" value="123.6k" />
+              {/* <ProfileData title="Made" value="122" /> */}
+              <ProfileData title="Sold" value="2,225" />
+            </div>
+
+            <div className="flex flex-col items-center">
+              <p className="text-sm">Metrics</p>
+              <div className="flex items-center w-full justify-center pb-4 space-x-6">
+                <ProfileData title="Height" value="5'6" />
+                <ProfileData title="Weight" value="150" />
+              </div>
+            </div>
           </div>
 
-          <Occupation occupation="Gym Owner" />
-
-          <div className="space-y-5 pt-4 ">
-            <InfoContainer>
-              <ProfileData title="Programs" value="5" />
-              <ProfileData title="Programs" value="5" />
-              <ProfileData title="Programs" value="5" />
-              <ProfileData title="Programs" value="5" />
-            </InfoContainer>
-
-            <InfoContainer>
-              <p className="text-xs">
-                Lorem Ipsum is simply dummy text of the printing and type
-                setting industry.
-              </p>
-            </InfoContainer>
-          </div>
-
-          <div className="space-y-4 pt-4">
-            <ListItems title="Programs" />
-            <ListItems title="Certifications" />
-          </div>
-        </div> */}
+          <p className="text-xs text-center py-2">
+            Lorem Ipsum is simply dummy text of the printing and type setting
+            industry.
+          </p>
+        </div>
+        <div className="space-y-4 pt-4">
+          <ListItems title="Programs" />
+          <ListItems title="Certifications" />
         </div>
       </PageContainer>
 
       {/* DESKTOP */}
-      <div className="hidden sm:block h-full">
+      {/* <div className="hidden sm:block h-full">
         <div className="mx-auto max-w-4xl h-full">
           <div className="flex items-center justify-between space-x-6 h-full ">
             <div className="flex space-x-6">
@@ -136,7 +95,7 @@ const Profile = () => {
             <ListItems title="Certifications" />
           </div>
         </div>
-      </div>
+      </div> */}
     </Layout>
   );
 };
@@ -167,34 +126,17 @@ const FollowButton = ({ isFollowing }) => (
   <button
     className={`${
       isFollowing ? "bg-disabledGrey" : "bg-successGreen"
-    } px-6 py-0.5 rounded w-full`}
+    } px-6 py-0.5 sm:py-1 mt-2 rounded w-full max-w-[90px]`}
   >
     {isFollowing ? "Unfollow" : "Follow"}
   </button>
 );
 
-const UserInfoContainer = ({ children }) => (
-  <div className="px-2 sm:px-4 py-2 border border-disabledGrey rounded grid grid-cols-3 w-full max-w-sm">
-    {children}
-  </div>
-);
-
-const InfoContainer = ({ children }) => (
-  <div className="px-2 sm:px-4 py-2 border border-disabledGrey rounded grid grid-cols-5 ">
-    {children}
-  </div>
-);
-
-const BioContainer = ({ children }) => (
-  <div className="px-2 sm:px-4 py-2 border border-disabledGrey rounded ">
-    {children}
-  </div>
-);
-
 const ProfileData = ({ title, value }) => (
-  <p className="mr-3 text-[10px] sm:text-base whitespace-nowrap">
-    <span className="font-semibold">{title}:</span> {value}
-  </p>
+  <div className="text-center">
+    <p className="text-2xl  font-bold mb-0 ">{value}</p>
+    <p className="text-[10px] sm:text-base ">{title}</p>
+  </div>
 );
 
 const Occupation = ({ occupation }) => <p>{occupation}</p>;
