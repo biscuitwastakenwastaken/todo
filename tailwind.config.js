@@ -9,6 +9,7 @@ module.exports = {
         warningYellow: "#E0E27C",
         negativeRed: "#E27C7C",
         disabledGrey: "#ABABAB",
+        lightBackgroundColor: "#F0F0F4",
       },
     },
   },

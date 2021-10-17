@@ -22,6 +22,13 @@ export default function Home() {
     }
     setActive("programs");
   };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      alert(search.length ? search : "Nothing was entered");
+    }
+  };
+
   // console.log(user);
   // console.log(authUser);
 
@@ -43,7 +50,11 @@ export default function Home() {
       <Header title="My Dashboard" subtitle="Home" />
 
       <PageContainer>
-        <Search search={search} setSearch={setSearch} />
+        <Search
+          search={search}
+          setSearch={setSearch}
+          handleKeyDown={handleKeyDown}
+        />
         <Tabs tabs={tabs} activeTab={activeTab} onClick={() => tabHandler()} />
 
         {activeTab === "programs" ? (
@@ -66,7 +77,7 @@ export default function Home() {
   );
 }
 
-const Search = ({ search, setSearch }) => (
+const Search = ({ search, setSearch, handleKeyDown }) => (
   <div className="border-2 py-1 px-3 flex justify-between">
     <input
       className="flex-grow outline-none "
@@ -76,6 +87,7 @@ const Search = ({ search, setSearch }) => (
       onChange={(event) => setSearch(event.target.value)}
       name="search"
       id="search"
+      onKeyDown={handleKeyDown}
     />
     <span onClick={() => alert(search)}>
       <svg

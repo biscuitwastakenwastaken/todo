@@ -12,6 +12,7 @@ import {
   updatePassword,
   reauthenticateWithCredential,
   EmailAuthProvider,
+  updateEmail,
 } from "firebase/auth";
 
 const authContext = createContext();
@@ -116,6 +117,20 @@ function useProvideAuth() {
       });
   };
 
+  const emailUpdate = (email) => {
+    setError(null);
+    console.log(email);
+    console.log(auth.currentUser);
+
+    updateEmail(auth.currentUser, email)
+      .then(() => {
+        console.log("email updarted");
+      })
+      .catch((error) => {
+        handleError(error);
+      });
+  };
+
   const sendPasswordReset = (email) => {
     setError(null);
     sendPasswordResetEmail(auth, email)
@@ -192,6 +207,7 @@ function useProvideAuth() {
     emailAuthProv,
     authUser,
     passwordUpdate,
+    emailUpdate,
   };
 }
 
