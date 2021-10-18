@@ -15,7 +15,7 @@ export const Default = ({ url }) => (
 
 export const InputContainer = ({ children, label }) => (
   <div>
-    <p className="text-[#929297] pl-2 font-extralight sm:font-light text-xs uppercase pb-1">
+    <p className="text-[#929297] pl-2 font-light text-xs uppercase pb-1">
       {label}
     </p>
     <div className="bg-white pl-3 py-1 divide-y divide-lightBackgroundColor rounded ">

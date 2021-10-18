@@ -99,7 +99,7 @@ export const EditInput = (props) => (
 const EditSensativeInfo = ({ label, link }) => (
   <div
     onClick={() => Router.push(link)}
-    className="flex items-center h-9 sm:h-10 px-2 justify-between text-black font-light cursor-pointer "
+    className="flex items-center h-9 sm:h-10 px-2 justify-between text-black cursor-pointer "
   >
     <p className="whitespace-nowrap">{label}</p>
     <BsChevronRight />
@@ -107,7 +107,7 @@ const EditSensativeInfo = ({ label, link }) => (
 );
 
 const DarkMode = ({ darkModeEnabled, setDarkModeEnabled }) => (
-  <div className="flex items-center h-9 sm:h-10 px-2 justify-between text-black font-light cursor-pointer ">
+  <div className="flex items-center h-9 sm:h-10 px-2 justify-between text-black cursor-pointer ">
     <p className="whitespace-nowrap">Dark Mode</p>
     <Switch
       checked={darkModeEnabled}
