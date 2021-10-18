@@ -66,7 +66,7 @@ const Settings = () => {
             <InputContainer>
               <div
                 onClick={() => signout()}
-                className="flex items-center h-9 sm:h-10 px-2 justify-between text-negativeRed font-light cursor-pointer "
+                className="flex items-center h-9 sm:h-10 px-2 justify-between text-negativeRed cursor-pointer "
               >
                 <p className="whitespace-nowrap">Log Out</p>
               </div>
@@ -75,7 +75,7 @@ const Settings = () => {
             <InputContainer>
               <div
                 onClick={() => Router.push(link)}
-                className="flex items-center h-9 sm:h-10 px-2 justify-between text-negativeRed font-light cursor-pointer "
+                className="flex items-center h-9 sm:h-10 px-2 justify-between text-negativeRed cursor-pointer "
               >
                 <p className="whitespace-nowrap">Delete Account</p>
               </div>
