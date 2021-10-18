@@ -47,8 +47,6 @@ export default function Home() {
   }
   return (
     <Layout>
-      <Header title="My Dashboard" subtitle="Home" />
-
       <PageContainer>
         <Search
           search={search}
@@ -78,17 +76,7 @@ export default function Home() {
 }
 
 const Search = ({ search, setSearch, handleKeyDown }) => (
-  <div className="border-2 py-1 px-3 flex justify-between">
-    <input
-      className="flex-grow outline-none "
-      type="text"
-      placeholder="Search something cool..."
-      value={search}
-      onChange={(event) => setSearch(event.target.value)}
-      name="search"
-      id="search"
-      onKeyDown={handleKeyDown}
-    />
+  <div className="border-2 py-1 px-3 flex justify-between space-x-2">
     <span onClick={() => alert(search)}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +92,17 @@ const Search = ({ search, setSearch, handleKeyDown }) => (
           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
         />
       </svg>
-    </span>
+    </span>{" "}
+    <input
+      className="flex-grow outline-none bg-transparent"
+      type="text"
+      placeholder="Search..."
+      value={search}
+      onChange={(event) => setSearch(event.target.value)}
+      name="search"
+      id="search"
+      onKeyDown={handleKeyDown}
+    />
   </div>
 );
 
@@ -130,7 +128,7 @@ const ListTitle = ({ title }) => (
 );
 
 const AddListItem = ({ title }) => (
-  <div className="bg-white border-2 cursor-pointer border-black h-16 w-16 md:h-24 md:w-24 flex-shrink-0 flex items-center text-center justify-center text-3xl">
+  <div className="bg-white border-2 cursor-pointer border-black h-[21px] w-[21px] md:h-[32px] md:w-[32px] flex-shrink-0 flex items-center text-center justify-center text-3xl">
     <BsPlus />
   </div>
 );
@@ -142,7 +140,7 @@ const ListItem = ({ title }) => (
 const ListItems = ({ title, items }) => (
   <div>
     <ListTitle title={title} />
-    <div className="flex space-x-4">
+    <div className="flex items-center space-x-4">
       <AddListItem />
       <div className="flex space-x-4 overflow-x-scroll no-scrollbar">
         {[...Array(20).keys()].map((item, itemIndex) => (

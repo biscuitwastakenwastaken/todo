@@ -1,19 +1,18 @@
 import React, { useState } from "react";
-import { useAuth } from "@/utils/auth";
+// import { useAuth } from "@/utils/auth";
 import Layout from "@/components/Layout";
-import { PageContainer, Default } from "@/components/pageUtils";
+import { PageContainer, Default, InputContainer } from "@/components/pageUtils";
 import Router from "next/router";
-import Header from "@/components/Header";
-import { BsChevronRight } from "react-icons/bs";
+import { BsChevronRight, BsPlus } from "react-icons/bs";
+import { AiFillMinusCircle } from "react-icons/ai";
 
 const EditProfile = () => {
-  const { user, emailUpdate, signout } = useAuth();
+  // const { user, emailUpdate, signout } = useAuth();
   // console.log(user);
 
   const [state, setState] = useState({
     firstName: "",
     lastName: "",
-    // email: "",
     default: "",
     socialLink: "",
     socialLinkText: "",
@@ -39,7 +38,7 @@ const EditProfile = () => {
 
   return (
     <Layout>
-      <PageContainer>
+      <PageContainer className="max-w-xl mx-auto">
         <form onSubmit={onSubmit}>
           <div className="flex items-center justify-between text-successGreen">
             <button onClick={() => Router.push("/profile")}>Cancel</button>
@@ -47,7 +46,7 @@ const EditProfile = () => {
           </div>
           <div className="flex flex-col items-center justify-center pb-4 sm:pb-6 space-y-1">
             <Default url="/me.png" />
-            <p>Change profile picture</p>
+            <p className="text-successGreen">Change profile picture</p>
           </div>
           <div className="space-y-4">
             <InputContainer label="Personal Information">
@@ -182,32 +181,9 @@ const EditProfile = () => {
                 id="height"
               />
             </InputContainer>
-
-            <InputContainer label="Account Info">
-              <EditSensativeInfo
-                link={"/updatepassword"}
-                label="Change Password"
-              />
-              <EditSensativeInfo link={"updateemail"} label="Change Email" />
-            </InputContainer>
-
-            <InputContainer>
-              <div
-                onClick={() => signout()}
-                className="flex items-center h-9 sm:h-10 px-2 justify-between text-negativeRed cursor-pointer "
-              >
-                <p className="whitespace-nowrap">Log Out</p>
-              </div>
-            </InputContainer>
-
-            <InputContainer>
-              <div
-                onClick={() => Router.push(link)}
-                className="flex items-center h-9 sm:h-10 px-2 justify-between text-negativeRed cursor-pointer "
-              >
-                <p className="whitespace-nowrap">Delete Account</p>
-              </div>
-            </InputContainer>
+            <div className="space-y-4 pt-6">
+              <ListItems title="Certifications" />
+            </div>
           </div>
         </form>
       </PageContainer>
@@ -216,15 +192,6 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
-
-const InputContainer = ({ children, label }) => (
-  <div className="max-w-xl mx-auto">
-    <p className="text-disabledGrey pl-2">{label}</p>
-    <div className="bg-white pl-3 py-1 divide-y divide-lightBackgroundColor rounded ">
-      {children}
-    </div>
-  </div>
-);
 
 export const EditInput = (props) => (
   <div className="flex items-center h-9 sm:h-10 px-2 relative space-x-3">
@@ -242,3 +209,51 @@ const EditSensativeInfo = ({ label, link }) => (
     <BsChevronRight />
   </div>
 );
+
+const ListTitle = ({ title }) => (
+  <div className="text-base sm:text-xl font-medium">
+    <p>{title}</p>
+  </div>
+);
+
+const AddListItem = () => (
+  <div className="bg-white border-2 cursor-pointer border-black h-[25px] w-[25px]  flex-shrink-0 flex items-center text-center justify-center text-3xl">
+    <BsPlus />
+  </div>
+);
+
+const ListItem = () => (
+  <div className="bg-disabledGrey h-24 w-24 mt-4 cursor-pointer hover:opacity-50 flex-shrink-0" />
+);
+
+const ListItems = ({ title, items }) => (
+  <div>
+    <p className="text-disabledGrey pl-2">{title}</p>
+    <div className="flex items-center space-x-4">
+      <AddListItem />
+      <div className="flex space-x-8 overflow-x-scroll no-scrollbar">
+        {[...Array(20).keys()].map((item, itemIndex) => (
+          <div class="flex flex-grow items-center space-x-1 transition duration-150">
+            <span class="relative">
+              <ListItem key={itemIndex} />
+              <span class="mt-4 absolute top-0 right-0 inline-flex items-center justify-center w-[30px] h-[30px] text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                -
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+{
+  /* <div class="text-white flex flex-grow items-center space-x-1 hover:text-white transition duration-150">
+  <span class="relative inline-block">
+  <ListItem key={itemIndex} />
+    <span class="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+      1
+    </span>
+  </span>
+</div>; */
+}

@@ -17,7 +17,7 @@ const navItems = [
   {
     id: "3",
     label: "Settings",
-    link: "/comingsoon",
+    link: "/settings",
   },
 ];
 
