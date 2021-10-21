@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/utils/auth";
 import Loading from "@/components/Loading";
-import LoginPage from "@/components/Auth/LoginPage";
 import Layout from "@/components/Layout";
-import Header from "@/components/Header";
 import { PageContainer } from "@/components/pageUtils";
 import { BsPlus } from "react-icons/bs";
 
 const tabs = ["programs", "analytics"];
 export default function Home() {
-  const { user, signout, loading, setError, sendVerificationEmail, authUser } =
-    useAuth();
+  const { user, loading, authUser } = useAuth();
 
   const [activeTab, setActive] = useState("programs");
   const [search, setSearch] = useState("");
@@ -35,19 +32,12 @@ export default function Home() {
   if (loading) {
     return <Loading />;
   }
-  if (!authUser) {
-    return <LoginPage />;
-  }
-  if (!authUser.emailVerified) {
-    useEffect(() => {
-      setError("You have not verified your account.");
-      // sendVerificationEmail(authUser);
-    }, []);
-    return <LoginPage />;
-  }
+
   return (
     <Layout>
       <PageContainer>
+        {user?.email}
+        {authUser?.email}
         <Search
           search={search}
           setSearch={setSearch}

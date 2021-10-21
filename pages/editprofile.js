@@ -39,11 +39,11 @@ const EditProfile = () => {
   return (
     <Layout>
       <PageContainer className="max-w-xl mx-auto">
+        <div className="flex items-center justify-between text-successGreen">
+          <button onClick={() => Router.push("/profile")}>Cancel</button>
+          <button>Save</button>
+        </div>
         <form onSubmit={onSubmit}>
-          <div className="flex items-center justify-between text-successGreen">
-            <button onClick={() => Router.push("/profile")}>Cancel</button>
-            <button>Save</button>
-          </div>
           <div className="flex flex-col items-center justify-center pb-4 sm:pb-6 space-y-1">
             <Default url="/me.png" />
             <p className="text-successGreen">Change profile picture</p>

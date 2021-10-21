@@ -1,8 +1,21 @@
 import Head from "next/head";
 import NavBar from "./NavBar";
 import Footer from "./Footer";
+import { useAuth } from "@/utils/auth";
+import Loading from "./Loading";
+import Router from "next/router";
 
 export default function Layout({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <Loading />;
+  }
+  if (!user) {
+    Router.push("/login");
+    return true;
+  }
+
   return (
     <>
       <Head>

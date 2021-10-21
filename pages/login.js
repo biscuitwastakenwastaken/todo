@@ -10,9 +10,10 @@ import {
   AuthTitle,
   AuthRedirect,
 } from "@/components/Auth/AuthPageUtils";
+import Loading from "@/components/Loading";
 
 export default function Login() {
-  const auth = useAuth();
+  const { user, loading, setError, error, signinWithEmail } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,15 +22,19 @@ export default function Login() {
   const onSubmit = (event) => {
     event.preventDefault();
     if (!email) {
-      auth.setError("Please enter email");
+      setError("Please enter email");
       return true;
     }
     if (!password) {
-      auth.setError("Please enter password");
+      setError("Please enter password");
       return true;
     }
-    auth.signinWithEmail(email, password);
+    signinWithEmail(email, password);
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <AuthLayout>
@@ -60,7 +65,7 @@ export default function Login() {
           />
           <AuthSubmit title="Login" disabled={!email || !password} />
         </div>
-        <AuthError error={auth.error} />
+        <AuthError error={error} />
         <div className="pt-6 space-y-2">
           <AuthRedirect
             text="Forgot password?"

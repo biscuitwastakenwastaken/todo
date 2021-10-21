@@ -13,7 +13,9 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
   updateEmail,
+  deleteUser,
 } from "firebase/auth";
+import { createUserDB } from "./db";
 
 const authContext = createContext();
 
@@ -36,7 +38,7 @@ function useProvideAuth() {
       const user = await formatUser(rawUser);
       const { token, ...userWithoutToken } = user;
 
-      //   createUser(user.uid, userWithoutToken);
+      createUserDB(user.uid, userWithoutToken);
       setUser(user);
 
       // cookie.set("biscuit-auth", true, {
@@ -72,7 +74,7 @@ function useProvideAuth() {
         console.log(authUser);
         sendEmailVerification(auth.currentUser);
         signout();
-        Router.push("/");
+        Router.push("/login");
       })
       .catch((error) => {
         handleError(error);
@@ -90,6 +92,29 @@ function useProvideAuth() {
       });
   };
 
+  // const signinWithEmail = (email, password) => {
+  //   setLoading(true);
+  //   setError(null);
+  //   signInWithEmailAndPassword(auth, email, password)
+  //     .then((userCredential) => {
+  //       console.log(userCredential.user);
+  //       const user = userCredential.user;
+  //       if (!user.emailVerified) {
+  //         signout().then((response) => {
+  //           if (response.status) {
+  //             console.log("here");
+  //             setError("Please Verify your email");
+  //           }
+  //         });
+  //         return true;
+  //       }
+  //       handleUser(user);
+  //       Router.push("/login");
+  //     })
+  //     .catch((error) => {
+  //       handleError(error);
+  //     });
+  // };
   const signinWithEmail = (email, password) => {
     setLoading(true);
     setError(null);
@@ -97,45 +122,17 @@ function useProvideAuth() {
       .then((userCredential) => {
         console.log(userCredential.user);
         const user = userCredential.user;
+        if (!user.emailVerified) {
+          console.log(auth.currentUser);
+          sendVerificationEmail(auth.currentUser);
+          signout().then(() => {
+            setError(
+              "You have not verified your account. Email has been resent."
+            );
+          });
+          return true;
+        }
         handleUser(user);
-        // Router.push("/");
-      })
-      .catch((error) => {
-        handleError(error);
-      });
-  };
-
-  const signout = () => {
-    setError(null);
-    Router.push("/");
-    signOut(auth)
-      .then(() => {
-        handleUser(false);
-      })
-      .catch((error) => {
-        handleError(error);
-      });
-  };
-
-  const emailUpdate = (email) => {
-    setError(null);
-    console.log(email);
-    console.log(auth.currentUser);
-
-    updateEmail(auth.currentUser, email)
-      .then(() => {
-        console.log("email updarted");
-      })
-      .catch((error) => {
-        handleError(error);
-      });
-  };
-
-  const sendPasswordReset = (email) => {
-    setError(null);
-    sendPasswordResetEmail(auth, email)
-      .then(() => {
-        // console.log("password reset email sent");
         Router.push("/");
       })
       .catch((error) => {
@@ -143,26 +140,89 @@ function useProvideAuth() {
       });
   };
 
-  const emailAuthProv = (email, password) => {
-    const credential = EmailAuthProvider.credential(email, password).catch(
-      (error) => {
-        handleError(error);
-      }
-    );
-    return credential;
+  // const signout = async () => {
+  //   setError(null);
+  //   Router.push("/login");
+  //   signOut(auth)
+  //     .then(() => {
+  //       handleUser(false);
+  //     })
+  //     .catch((error) => {
+  //       handleError(error);
+  //     });
+  // };
+
+  const signout = async () => {
+    setError(null);
+    Router.push("/login");
+    try {
+      await signOut(auth);
+      handleUser(false);
+      return { status: true };
+    } catch (error) {
+      handleError(error);
+      return { status: false };
+    }
   };
 
-  const reauthenticateUser = (credential, newPassword) => {
+  const emailUpdate = async (credential, email) => {
     setError(null);
-    reauthenticateWithCredential(auth.currentUser, credential)
+    const { status } = await reauthenticateUser(credential);
+    if (status && email) {
+      updateEmail(auth.currentUser, email);
+      // sendVerificationEmail(auth.currentUser);
+      signout();
+    }
+  };
+
+  const sendPasswordReset = (email) => {
+    setError(null);
+    sendPasswordResetEmail(auth, email)
       .then(() => {
-        if (newPassword) {
-          passwordUpdate(newPassword);
-        }
+        // console.log("password reset email sent");
+        Router.push("/login");
       })
       .catch((error) => {
         handleError(error);
       });
+  };
+
+  const emailAuthProv = (email, password) => {
+    const credential = EmailAuthProvider.credential(email, password);
+    return credential;
+  };
+
+  const passwordReset = async (credential, newPassword) => {
+    setError(null);
+    const { status } = await reauthenticateUser(credential);
+    if (status && newPassword) {
+      passwordUpdate(newPassword);
+      Router.push("/settings");
+    }
+  };
+
+  const reauthenticateUser = async (credential) => {
+    setError(null);
+    try {
+      const response = await reauthenticateWithCredential(
+        auth.currentUser,
+        credential
+      );
+      return { status: true };
+    } catch (error) {
+      handleError(error);
+      return { status: false };
+    }
+  };
+
+  const deleteAccount = async (credential) => {
+    setError(null);
+    const { status } = await reauthenticateUser(credential);
+    if (status) {
+      const deleteThisUser = await deleteUser(auth.currentUser);
+      handleUser(false);
+      Router.push("/login");
+    }
   };
 
   const passwordUpdate = (newPassword) => {
@@ -204,10 +264,12 @@ function useProvideAuth() {
     signout,
     sendPasswordReset,
     reauthenticateUser,
+    passwordReset,
     emailAuthProv,
     authUser,
     passwordUpdate,
     emailUpdate,
+    deleteAccount,
   };
 }
 

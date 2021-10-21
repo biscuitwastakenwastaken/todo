@@ -2,20 +2,31 @@ import { useState } from "react";
 import { Switch } from "@headlessui/react";
 import { useAuth } from "@/utils/auth";
 import Layout from "@/components/Layout";
-import Header from "@/components/Header";
-import { PageContainer, Default, InputContainer } from "@/components/pageUtils";
+import { PageContainer, InputContainer } from "@/components/pageUtils";
 import Router from "next/router";
 import { BsChevronRight } from "react-icons/bs";
+import DeleteAccountModal from "@/components/Auth/DeleteAccountModal";
 
 const Settings = () => {
-  const { user, emailUpdate, signout } = useAuth();
+  const {
+    user,
 
+    signout,
+    error,
+    setError,
+    deleteAccount,
+    emailAuthProv,
+  } = useAuth();
+
+  const [showPassword, setShowPassword] = useState(false);
+  let [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
+  const [password, setPassword] = useState("");
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+  const [disableDeleteButton, setDisableDeleteButton] = useState(false);
   const [state, setState] = useState({
     firstName: "",
     lastName: "",
     // email: "",
-
     socialLink: "",
     socialLinkText: "",
     profession: "",
@@ -38,16 +49,30 @@ const Settings = () => {
     // emailUpdate(state.email);
   };
 
+  const deleteModalHandler = () => {
+    deleteModalIsOpen ? setPassword("") : null;
+    setDeleteModalIsOpen((prevState) => !prevState);
+    setDisableDeleteButton(false);
+    setError(null);
+    setShowPassword(false);
+  };
+
+  const permanentlyDeleteAccountHandler = () => {
+    setDisableDeleteButton(true);
+    if (!password) {
+      setError("Enter password to delete account");
+      setDisableDeleteButton(false);
+      return true;
+    }
+    const credential = emailAuthProv(user?.email, password);
+    setPassword("");
+    deleteAccount(credential);
+  };
+
   return (
     <Layout>
       <PageContainer className="max-w-xl mx-auto">
-        {/* <Header title="Settings" subtitle="my Settings" /> */}
         <form onSubmit={onSubmit}>
-          <div className="flex items-center justify-between text-successGreen">
-            <button onClick={() => Router.push("/profile")}>Cancel</button>
-            <button>Save</button>
-          </div>
-
           <div className="space-y-8 pt-4">
             <InputContainer label="App Appearance">
               <DarkMode
@@ -57,11 +82,8 @@ const Settings = () => {
               {/* <EditSensativeInfo link={"updateemail"} label="Change Email" /> */}
             </InputContainer>
             <InputContainer label="Account Info">
-              <EditSensativeInfo
-                link={"/updatepassword"}
-                label="Change Password"
-              />
-              <EditSensativeInfo link={"updateemail"} label="Change Email" />
+              <EditSensativeInfo link={"/emailUpdate"} label="Change Email" />
+              <EditSensativeInfo link={"/reset"} label="Change Password" />
             </InputContainer>
             <InputContainer>
               <div
@@ -74,7 +96,7 @@ const Settings = () => {
 
             <InputContainer>
               <div
-                onClick={() => Router.push(link)}
+                onClick={deleteModalHandler}
                 className="flex items-center h-9 sm:h-10 px-2 justify-between text-negativeRed cursor-pointer "
               >
                 <p className="whitespace-nowrap">Delete Account</p>
@@ -83,6 +105,18 @@ const Settings = () => {
           </div>
         </form>
       </PageContainer>
+
+      <DeleteAccountModal
+        deleteModalIsOpen={deleteModalIsOpen}
+        deleteModalHandler={deleteModalHandler}
+        permanentlyDeleteAccountHandler={permanentlyDeleteAccountHandler}
+        password={password}
+        setPassword={setPassword}
+        error={error}
+        disableDeleteButton={disableDeleteButton}
+        setShowPassword={setShowPassword}
+        showPassword={showPassword}
+      />
     </Layout>
   );
 };

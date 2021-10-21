@@ -3,15 +3,15 @@ import { useAuth } from "@/utils/auth";
 import { errorCodes } from "@/utils/errorCodes";
 
 export const AuthError = ({ error }) => {
-  const { sendVerificationEmail, authUser } = useAuth();
-  console.log(authUser);
+  const { sendVerificationEmail } = useAuth();
+  // console.log(authUser);
   return (
     <div className="flex flex-col items-center space-y-3 justify-center">
       <p className="text-negativeRed text-center">{error}</p>
       {errorCodes["auth/account-not-verified"] == error && (
         // {error == "You have not verified your account." && (
         <button
-          onClick={() => sendVerificationEmail(authUser)}
+          onClick={() => sendVerificationEmail()}
           className="bg-successGreen text-white px-2 py-1"
         >
           Resend Link
@@ -24,7 +24,7 @@ export const AuthError = ({ error }) => {
 export const AuthLayout = ({ children }) => {
   return (
     <div className="flex h-screen">
-      <div className="sm:max-w-2xl m-auto w-full">{children}</div>;
+      <div className="sm:max-w-2xl m-auto w-full">{children}</div>
     </div>
   );
 };
