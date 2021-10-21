@@ -18,7 +18,7 @@ export default function Register() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [passwordOne, setPasswordOne] = useState("");
+  const [password, setPassword] = useState("");
   const [passwordTwo, setPasswordTwo] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -29,11 +29,17 @@ export default function Register() {
       auth.setError("Please enter first and last name");
       return true;
     }
-    if (passwordOne !== passwordTwo) {
+    if (password !== passwordTwo) {
       auth.setError("Password do not match");
       return true;
     }
-    auth.createUser(email, passwordOne);
+    const payload = {
+      firstName,
+      lastName,
+      email,
+      password,
+    };
+    auth.createUser(payload);
   };
 
   return (
@@ -68,9 +74,9 @@ export default function Register() {
           <AuthInput
             title="Password"
             type={showPassword ? "text" : "password"}
-            name="passwordOne"
-            value={passwordOne}
-            onChange={(event) => setPasswordOne(event.target.value)}
+            name="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
             id="signUpPassword"
           />
           <AuthInput
@@ -91,7 +97,7 @@ export default function Register() {
           <AuthSubmit
             title="Create Account"
             disabled={
-              !firstName || !lastName || !email || !passwordOne || !passwordTwo
+              !firstName || !lastName || !email || !password || !passwordTwo
             }
           />
           <AuthError error={auth.error} />

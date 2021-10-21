@@ -1,19 +1,28 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { AuthInput, AuthError, AuthShowPassword } from "./AuthPageUtils";
 import { CgSpinner } from "react-icons/cg";
+import { useAuth } from "@/utils/auth";
 
-const DeleteAccountModal = ({
-  deleteModalIsOpen,
-  deleteModalHandler,
-  permanentlyDeleteAccountHandler,
-  error,
-  password,
-  setPassword,
-  disableDeleteButton,
-  showPassword,
-  setShowPassword,
-}) => {
+const DeleteAccountModal = ({ deleteModalIsOpen, deleteModalHandler }) => {
+  const { user, error, setError, deleteAccount, emailAuthProv } = useAuth();
+
+  const [disableDeleteButton, setDisableDeleteButton] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+
+  const permanentlyDeleteAccountHandler = () => {
+    setDisableDeleteButton(true);
+    if (!password) {
+      setError("Enter password to delete account");
+      setDisableDeleteButton(false);
+      return true;
+    }
+    const credential = emailAuthProv(user?.email, password);
+    setPassword("");
+    deleteAccount(credential);
+  };
+
   return (
     <Transition appear show={deleteModalIsOpen} as={Fragment}>
       <Dialog

@@ -1,6 +1,6 @@
 import Layout from "@/components/Layout";
 import { useAuth } from "@/utils/auth";
-import { createUser } from "@/utils/db";
+import { createUserDB } from "@/utils/db";
 // stripe stuff TODO
 
 export default function comingsoon() {
@@ -15,7 +15,7 @@ export default function comingsoon() {
       </button>
       <button
         className="text-black"
-        onClick={() => createUser(user.uid, { ...user })}
+        onClick={() => createUserDB(user.uid, { ...user })}
       >
         add user {user?.uid}
       </button>

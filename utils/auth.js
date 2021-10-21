@@ -66,21 +66,6 @@ function useProvideAuth() {
     setError(errorCodes[errorCode] || errorMessage);
   };
 
-  const createUser = (email, password) => {
-    setLoading(true);
-    setError(null);
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((authUser) => {
-        console.log(authUser);
-        sendEmailVerification(auth.currentUser);
-        signout();
-        Router.push("/login");
-      })
-      .catch((error) => {
-        handleError(error);
-      });
-  };
-
   const sendVerificationEmail = (authUser) => {
     sendEmailVerification(authUser)
       .then((response) => {
@@ -92,29 +77,36 @@ function useProvideAuth() {
       });
   };
 
-  // const signinWithEmail = (email, password) => {
-  //   setLoading(true);
-  //   setError(null);
-  //   signInWithEmailAndPassword(auth, email, password)
-  //     .then((userCredential) => {
-  //       console.log(userCredential.user);
-  //       const user = userCredential.user;
-  //       if (!user.emailVerified) {
-  //         signout().then((response) => {
-  //           if (response.status) {
-  //             console.log("here");
-  //             setError("Please Verify your email");
-  //           }
-  //         });
-  //         return true;
-  //       }
-  //       handleUser(user);
-  //       Router.push("/login");
-  //     })
-  //     .catch((error) => {
-  //       handleError(error);
-  //     });
-  // };
+  const formatCreateUser = (user) => {
+    return {
+      uid: user.uid,
+      email: user.email,
+      provider: user.providerData[0].providerId,
+
+      // stripeRole: await getStripeRole(),
+      emailVerified: user.emailVerified,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
+  };
+
+  const createUser = async (data) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+      await createUserDB(user.uid, formatCreateUser({ ...user, ...data }));
+      sendVerificationEmail(auth.currentUser);
+      signout();
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   const signinWithEmail = (email, password) => {
     setLoading(true);
     setError(null);
@@ -122,16 +114,6 @@ function useProvideAuth() {
       .then((userCredential) => {
         console.log(userCredential.user);
         const user = userCredential.user;
-        if (!user.emailVerified) {
-          console.log(auth.currentUser);
-          sendVerificationEmail(auth.currentUser);
-          signout().then(() => {
-            setError(
-              "You have not verified your account. Email has been resent."
-            );
-          });
-          return true;
-        }
         handleUser(user);
         Router.push("/");
       })
@@ -140,29 +122,16 @@ function useProvideAuth() {
       });
   };
 
-  // const signout = async () => {
-  //   setError(null);
-  //   Router.push("/login");
-  //   signOut(auth)
-  //     .then(() => {
-  //       handleUser(false);
-  //     })
-  //     .catch((error) => {
-  //       handleError(error);
-  //     });
-  // };
-
-  const signout = async () => {
+  const signout = () => {
     setError(null);
     Router.push("/login");
-    try {
-      await signOut(auth);
-      handleUser(false);
-      return { status: true };
-    } catch (error) {
-      handleError(error);
-      return { status: false };
-    }
+    signOut(auth)
+      .then(() => {
+        handleUser(false);
+      })
+      .catch((error) => {
+        handleError(error);
+      });
   };
 
   const emailUpdate = async (credential, email) => {
@@ -170,8 +139,7 @@ function useProvideAuth() {
     const { status } = await reauthenticateUser(credential);
     if (status && email) {
       updateEmail(auth.currentUser, email);
-      // sendVerificationEmail(auth.currentUser);
-      signout();
+      Router.push("/");
     }
   };
 
@@ -179,7 +147,6 @@ function useProvideAuth() {
     setError(null);
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        // console.log("password reset email sent");
         Router.push("/login");
       })
       .catch((error) => {
@@ -274,15 +241,17 @@ function useProvideAuth() {
 }
 
 const formatUser = async (user) => {
-  const token = await user.getIdToken();
+  const token = await user?.getIdToken();
   return {
     uid: user.uid,
     email: user.email,
-    name: user.displayName,
+    // name: user.displayName,
     provider: user.providerData[0].providerId,
     photoUrl: user.photoURL,
     // stripeRole: await getStripeRole(),
     token,
     emailVerified: user.emailVerified,
+    // firstName,
+    // lastName
   };
 };

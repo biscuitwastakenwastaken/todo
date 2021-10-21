@@ -6,16 +6,16 @@ import Loading from "./Loading";
 import Router from "next/router";
 
 export default function Layout({ children }) {
-  const { user, loading } = useAuth();
+  const { user, loading, authUser } = useAuth();
 
   if (loading) {
     return <Loading />;
   }
-  if (!user) {
+  if (!authUser) {
     Router.push("/login");
     return true;
   }
-
+  console.log(authUser);
   return (
     <>
       <Head>
