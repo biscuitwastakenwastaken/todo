@@ -15,7 +15,7 @@ export default function comingsoon() {
       </button>
       <button
         className="text-black"
-        onClick={() => createUserDB(user.uid, { ...user })}
+        onClick={() => createUserDB(user?.uid, { ...user })}
       >
         add user {user?.uid}
       </button>

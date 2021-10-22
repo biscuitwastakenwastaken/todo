@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Router from "next/router";
-// import { useAuth } from "@/utils/auth";
+import { useAuth } from "@/utils/auth";
 // import Logo from "/public/logo.svg";
 
 const navItems = [
@@ -22,6 +22,7 @@ const navItems = [
 ];
 
 function NavBar() {
+  const { user } = useAuth();
   return (
     <header className="w-full bg-white border-b border-gray-200">
       <div className="border-t-[5px] border-successGreen" />
@@ -43,15 +44,17 @@ function NavBar() {
         {/* Header: Right side */}
         {/* Default */}
         <div onClick={() => Router.push("/profile")}>
-          {false ? (
-            <div className="object-cover rounded-full w-8 h-8 cursor-pointer bg-successGreen" />
+          {user?.photoUrl ? (
+            <img
+              src={user?.photoUrl}
+              className="object-cover rounded-full w-8 h-8 cursor-pointer"
+            />
           ) : (
-            // <img
-            //   src={view?.avatar_url}
-            //   className="object-cover rounded-full w-8 h-8 cursor-pointer"
-            // />
             <div className="grid place-items-center w-8 h-8 rounded-full bg-successGreen text-white cursor-pointer">
-              <p className="text-xs">MM</p>
+              <p className="text-xs">
+                {user?.firstName[0]}
+                {user?.lastName[0]}
+              </p>
             </div>
           )}
         </div>

@@ -30,7 +30,7 @@ export default function AuthReset() {
       setError("Password do not match");
       return true;
     }
-    const credential = emailAuthProv(user.email, oldPassword);
+    const credential = emailAuthProv(user?.email, oldPassword);
     passwordReset(credential, passwordOne);
   };
 

@@ -30,7 +30,7 @@ export default function EmailUpdate() {
       setError("Please enter email");
       return true;
     }
-    const credential = emailAuthProv(user.email, password);
+    const credential = emailAuthProv(user?.email, password);
     emailUpdate(credential, email);
   };
 

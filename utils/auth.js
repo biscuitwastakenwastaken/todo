@@ -38,9 +38,9 @@ function useProvideAuth() {
       const user = await formatUser(rawUser);
       const { token, ...userWithoutToken } = user;
 
-      createUserDB(user.uid, userWithoutToken);
+      createUserDB(user?.uid, userWithoutToken);
       const user2 = await getDocument("users", user?.uid);
-
+      console.log(user, user2);
       setUser({ ...user, ...user2 });
 
       // cookie.set("biscuit-auth", true, {
@@ -81,14 +81,14 @@ function useProvideAuth() {
 
   const formatCreateUser = (user) => {
     return {
-      uid: user.uid,
-      email: user.email,
-      provider: user.providerData[0].providerId,
+      uid: user?.uid,
+      email: user?.email,
+      provider: user?.providerData[0].providerId,
 
       // stripeRole: await getStripeRole(),
-      emailVerified: user.emailVerified,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      emailVerified: user?.emailVerified,
+      firstName: user?.firstName,
+      lastName: user?.lastName,
     };
   };
 
@@ -101,7 +101,7 @@ function useProvideAuth() {
         data.email,
         data.password
       );
-      await createUserDB(user.uid, formatCreateUser({ ...user, ...data }));
+      await createUserDB(user?.uid, formatCreateUser({ ...user, ...data }));
       sendVerificationEmail(auth.currentUser);
       signout();
     } catch (error) {
@@ -246,14 +246,14 @@ function useProvideAuth() {
 const formatUser = async (user) => {
   const token = await user?.getIdToken();
   return {
-    uid: user.uid,
-    email: user.email,
-    // name: user.displayName,
-    provider: user.providerData[0].providerId,
-    photoUrl: user.photoURL,
+    uid: user?.uid,
+    email: user?.email,
+    // name: user?.displayName,
+    provider: user?.providerData[0].providerId,
+    // photoUrl: user?.photoURL,
     // stripeRole: await getStripeRole(),
     token,
-    emailVerified: user.emailVerified,
+    emailVerified: user?.emailVerified,
     // firstName,
     // lastName
   };

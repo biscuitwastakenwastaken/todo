@@ -12,8 +12,8 @@ const Profile = () => {
       <PageContainer>
         <div className="flex flex-col items-center justify-center w-full mx-auto">
           <ProfileName name={`${user?.firstName} ${user?.lastName}`} />
-          <SocialLink link={user?.socialLinkText} />
-          <Default url="/me.png" />
+          <SocialLink link={user?.socialLink} linkText={user?.socialLinkText} />
+          <Default url={user?.photoUrl} />
           <Occupation occupation={user?.profession} />
           <FollowButton />
 
@@ -35,11 +35,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <p className="text-[10px] text-center pt-6">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text.
-            Lorem Ipsum is sim
-          </p>
+          <p className="text-[10px] text-center pt-6">{user?.bio}</p>
         </div>
         <div className="space-y-4 pt-6">
           <ListItems title="Programs" />
@@ -58,7 +54,16 @@ const ProfileName = ({ name }) => (
   </div>
 );
 
-const SocialLink = ({ link }) => <p className="text-xs">{link}</p>;
+const SocialLink = ({ link, linkText }) =>
+  !linkText ? (
+    <a target="_blank" href={link}>
+      {link}
+    </a>
+  ) : (
+    <a target="_blank" href={link}>
+      <p className="text-xs">{linkText}</p>
+    </a>
+  );
 
 const FollowButton = ({ isFollowing }) => (
   <button
@@ -103,8 +108,4 @@ const ListItems = ({ title, items }) => (
       ))}
     </div>
   </div>
-);
-
-const Divider = () => (
-  <div className="h-1 w-full border-t border-disabledGrey" />
 );

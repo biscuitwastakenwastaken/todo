@@ -1,24 +1,88 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/utils/auth";
 import Layout from "@/components/Layout";
-import { PageContainer, Default, InputContainer } from "@/components/pageUtils";
+import {
+  PageContainer,
+  Default,
+  InputContainer,
+  Toast,
+} from "@/components/pageUtils";
 import Router from "next/router";
 import { BsChevronRight, BsPlus } from "react-icons/bs";
 import { AiFillMinusCircle } from "react-icons/ai";
-import { updateUser, getDocument } from "@/utils/db";
+import { updateUser } from "@/utils/db";
 import { toast } from "react-toastify";
+import { storage } from "@/utils/firebase";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { getFile } from "@/utils/storage";
+import isUrl from "is-valid-http-url";
 
 const EditProfile = () => {
   const { user, setError, setUser } = useAuth();
-
+  // console.log(user);
   const [state, setState] = useState(user);
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     setState(user);
+    console.log(file);
   }, [user]);
+
+  const handleChange = (e) => {
+    setFile(e.target.files[0]);
+    setState((prevState) => ({
+      ...prevState,
+      photoUrl: URL.createObjectURL(e.target.files[0]),
+    }));
+  };
+
+  const handleUpload = async (e) => {
+    e?.preventDefault();
+
+    // const storageRef = ref(storage, `/${user?.uid}/${file.name}`);
+    const storageRef = ref(storage, `/${user?.uid}/${user?.uid}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+        switch (snapshot.state) {
+          case "paused":
+            console.log("Upload is paused");
+            break;
+          case "running":
+            console.log("Upload is running");
+            break;
+        }
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+      },
+      () => {
+        // Handle successful uploads
+        // getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+        getFile(uploadTask.snapshot.ref).then((url) => {
+          console.log("File available at", url);
+          setFile(null);
+          setState((prevState) => ({
+            ...prevState,
+            photoUrl: url,
+          }));
+
+          updateUser(user?.uid, { ...state, photoUrl: url }).then(() => {
+            setUser({ ...state, photoUrl: url });
+            Toast("success", "Profile updated");
+          });
+        });
+      }
+    );
+  };
 
   const onSubmit = async (event) => {
     event.preventDefault();
+
     if (!state?.firstName) {
       setError("Please enter email");
       return true;
@@ -27,13 +91,18 @@ const EditProfile = () => {
       setError("Please enter password");
       return true;
     }
-    updateUser(user.uid, state).then(() => {
+    if (state?.socialLink && !isUrl(state?.socialLink)) {
+      setError("Please enter valid url");
+
+      return true;
+    }
+    if (file) {
+      handleUpload();
+      return true;
+    }
+    updateUser(user?.uid, state).then(() => {
       setUser(state);
-      toast.success("Profile Updated!", {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 1800,
-        closeButton: false,
-      });
+      Toast("success", "Profile Updated!");
     });
   };
 
@@ -45,10 +114,23 @@ const EditProfile = () => {
             <button onClick={() => Router.push("/profile")}>Cancel</button>
             <button>Save</button>
           </div>
+
           <div className="flex flex-col items-center justify-center pb-4 sm:pb-6 space-y-1">
-            <Default url="/me.png" />
-            <p className="text-successGreen">Change profile picture</p>
+            <Default url={state?.photoUrl} />
+            {/* <Default url="/me.png" /> */}
+            {/* <form onSubmit={handleUpload}> */}
+            <label>
+              <input className="hidden" type="file" onChange={handleChange} />
+              <p className="text-successGreen cursor-pointer">
+                Change profile picture
+              </p>
+            </label>
+
+            {/* <button disabled={!file}>submit that</button> */}
+            {/* <p className="text-successGreen">Change profile picture</p>  */}
+            {/* </form> */}
           </div>
+
           <div className="space-y-4">
             <InputContainer label="Personal Information">
               <EditInput
@@ -91,6 +173,7 @@ const EditProfile = () => {
                 }
                 name="bio"
                 id="bio"
+                maxLength="150"
               />
 
               <EditInput
@@ -120,6 +203,7 @@ const EditProfile = () => {
                 }
                 name="socialLink"
                 id="socialLink"
+                required={state?.socialLinkText}
               />
               <EditInput
                 title="Link Name"
@@ -200,10 +284,13 @@ const ListItems = ({ title, items }) => (
       <AddListItem />
       <div className="flex space-x-8 overflow-x-scroll no-scrollbar">
         {[...Array(20).keys()].map((item, itemIndex) => (
-          <div class="flex flex-grow items-center space-x-1 transition duration-150">
-            <span class="relative">
+          <div
+            key={itemIndex}
+            className="flex flex-grow items-center space-x-1 transition duration-150"
+          >
+            <span className="relative">
               <ListItem key={itemIndex} />
-              <span class="mt-4 absolute top-0 right-0 inline-flex items-center justify-center w-[30px] h-[30px] text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+              <span className="mt-4 absolute top-0 right-0 inline-flex items-center justify-center w-[30px] h-[30px] text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
                 -
               </span>
             </span>
