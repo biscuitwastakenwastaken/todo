@@ -5,16 +5,16 @@ import { PageContainer, Default } from "@/components/pageUtils";
 import Router from "next/router";
 
 const Profile = () => {
-  // const { user } = useAuth();
+  const { user } = useAuth();
   // console.log(user);
   return (
     <Layout>
       <PageContainer>
         <div className="flex flex-col items-center justify-center w-full mx-auto">
-          <ProfileName name="Matthew Mayfield" />
-          <SocialLink link="@gainthetics" />
+          <ProfileName name={`${user?.firstName} ${user?.lastName}`} />
+          <SocialLink link={user?.socialLinkText} />
           <Default url="/me.png" />
-          <Occupation occupation="Gym Owner" />
+          <Occupation occupation={user?.profession} />
           <FollowButton />
 
           <div className="space-y-3 w-full mt-6">
@@ -29,8 +29,8 @@ const Profile = () => {
 
             <div className="flex flex-col items-center">
               <div className="flex items-center w-full justify-center space-x-6">
-                <ProfileData title="Height" value="5'6" />
-                <ProfileData title="Weight" value="150" />
+                <ProfileData title="Height" value={user?.height} />
+                <ProfileData title="Weight" value={user?.weight} />
               </div>
             </div>
           </div>

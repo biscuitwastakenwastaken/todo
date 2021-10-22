@@ -15,7 +15,7 @@ import {
   updateEmail,
   deleteUser,
 } from "firebase/auth";
-import { createUserDB } from "./db";
+import { createUserDB, getDocument } from "./db";
 
 const authContext = createContext();
 
@@ -39,7 +39,9 @@ function useProvideAuth() {
       const { token, ...userWithoutToken } = user;
 
       createUserDB(user.uid, userWithoutToken);
-      setUser(user);
+      const user2 = await getDocument("users", user?.uid);
+
+      setUser({ ...user, ...user2 });
 
       // cookie.set("biscuit-auth", true, {
       //   expires: 1,
@@ -112,7 +114,7 @@ function useProvideAuth() {
     setError(null);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        console.log(userCredential.user);
+        // console.log(userCredential.user);
         const user = userCredential.user;
         handleUser(user);
         Router.push("/");
@@ -237,6 +239,7 @@ function useProvideAuth() {
     passwordUpdate,
     emailUpdate,
     deleteAccount,
+    setUser,
   };
 }
 

@@ -15,7 +15,7 @@ export default function Layout({ children }) {
     Router.push("/login");
     return true;
   }
-  console.log(authUser);
+  // console.log(authUser);
   return (
     <>
       <Head>

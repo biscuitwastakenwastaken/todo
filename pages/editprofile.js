@@ -1,49 +1,50 @@
-import React, { useState } from "react";
-// import { useAuth } from "@/utils/auth";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "@/utils/auth";
 import Layout from "@/components/Layout";
 import { PageContainer, Default, InputContainer } from "@/components/pageUtils";
 import Router from "next/router";
 import { BsChevronRight, BsPlus } from "react-icons/bs";
 import { AiFillMinusCircle } from "react-icons/ai";
+import { updateUser, getDocument } from "@/utils/db";
+import { toast } from "react-toastify";
 
 const EditProfile = () => {
-  // const { user, emailUpdate, signout } = useAuth();
-  // console.log(user);
+  const { user, setError, setUser } = useAuth();
 
-  const [state, setState] = useState({
-    firstName: "",
-    lastName: "",
-    default: "",
-    socialLink: "",
-    socialLinkText: "",
-    profession: "",
-    bio: "",
-    weight: "",
-    height: "",
-  });
+  const [state, setState] = useState(user);
 
-  const onSubmit = (event) => {
+  useEffect(() => {
+    setState(user);
+  }, [user]);
+
+  const onSubmit = async (event) => {
     event.preventDefault();
-    alert(JSON.stringify(state));
-    // if (!email) {
-    //   auth.setError("Please enter email");
-    //   return true;
-    // }
-    // if (!password) {
-    //   auth.setError("Please enter password");
-    //   return true;
-    // }
-    // emailUpdate(state.email);
+    if (!state?.firstName) {
+      setError("Please enter email");
+      return true;
+    }
+    if (!state?.lastName) {
+      setError("Please enter password");
+      return true;
+    }
+    updateUser(user.uid, state).then(() => {
+      setUser(state);
+      toast.success("Profile Updated!", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1800,
+        closeButton: false,
+      });
+    });
   };
 
   return (
     <Layout>
       <PageContainer className="max-w-xl mx-auto">
-        <div className="flex items-center justify-between text-successGreen">
-          <button onClick={() => Router.push("/profile")}>Cancel</button>
-          <button>Save</button>
-        </div>
         <form onSubmit={onSubmit}>
+          <div className="flex items-center justify-between text-successGreen">
+            <button onClick={() => Router.push("/profile")}>Cancel</button>
+            <button>Save</button>
+          </div>
           <div className="flex flex-col items-center justify-center pb-4 sm:pb-6 space-y-1">
             <Default url="/me.png" />
             <p className="text-successGreen">Change profile picture</p>
@@ -53,8 +54,8 @@ const EditProfile = () => {
               <EditInput
                 title="First Name"
                 type="text"
-                value={state.firstName}
-                //   required
+                value={state?.firstName}
+                required
                 onChange={(event) =>
                   setState((prevState) => ({
                     ...prevState,
@@ -67,8 +68,8 @@ const EditProfile = () => {
               <EditInput
                 title="Last Name"
                 type="text"
-                value={state.lastName}
-                //   required
+                value={state?.lastName}
+                required
                 onChange={(event) =>
                   setState((prevState) => ({
                     ...prevState,
@@ -81,8 +82,7 @@ const EditProfile = () => {
               <EditInput
                 title="Bio"
                 type="text"
-                value={state.bio}
-                //   required
+                value={state?.bio}
                 onChange={(event) =>
                   setState((prevState) => ({
                     ...prevState,
@@ -92,26 +92,11 @@ const EditProfile = () => {
                 name="bio"
                 id="bio"
               />
-              {/* <EditInput
-                title="Email"
-                type="email"
-                value={state.email}
-                required
-                onChange={(event) =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    email: event.target.value,
-                  }))
-                }
-                name="email"
-                id="email"
-              /> */}
 
               <EditInput
                 title="Profession"
                 type="text"
-                value={state.profession}
-                //   required
+                value={state?.profession}
                 onChange={(event) =>
                   setState((prevState) => ({
                     ...prevState,
@@ -126,7 +111,7 @@ const EditProfile = () => {
               <EditInput
                 title="Link"
                 type="text"
-                value={state.socialLink}
+                value={state?.socialLink}
                 onChange={(event) =>
                   setState((prevState) => ({
                     ...prevState,
@@ -139,7 +124,7 @@ const EditProfile = () => {
               <EditInput
                 title="Link Name"
                 type="text"
-                value={state.socialLinkText}
+                value={state?.socialLinkText}
                 onChange={(event) =>
                   setState((prevState) => ({
                     ...prevState,
@@ -155,8 +140,7 @@ const EditProfile = () => {
               <EditInput
                 title="Weight"
                 type="text"
-                value={state.weight}
-                //   required
+                value={state?.weight}
                 onChange={(event) =>
                   setState((prevState) => ({
                     ...prevState,
@@ -169,8 +153,7 @@ const EditProfile = () => {
               <EditInput
                 title="Height"
                 type="text"
-                value={state.height}
-                //   required
+                value={state?.height}
                 onChange={(event) =>
                   setState((prevState) => ({
                     ...prevState,
@@ -197,22 +180,6 @@ export const EditInput = (props) => (
   <div className="flex items-center h-9 sm:h-10 px-2 relative space-x-3">
     <p className="text-disabledGrey whitespace-nowrap">{props.title}</p>
     <input {...props} className="h-full w-full focus:outline-none" />
-  </div>
-);
-
-const EditSensativeInfo = ({ label, link }) => (
-  <div
-    onClick={() => Router.push(link)}
-    className="flex items-center h-9 sm:h-10 px-2 justify-between text-disabledGrey cursor-pointer "
-  >
-    <p className="whitespace-nowrap">{label}</p>
-    <BsChevronRight />
-  </div>
-);
-
-const ListTitle = ({ title }) => (
-  <div className="text-base sm:text-xl font-medium">
-    <p>{title}</p>
   </div>
 );
 
@@ -246,14 +213,3 @@ const ListItems = ({ title, items }) => (
     </div>
   </div>
 );
-
-{
-  /* <div class="text-white flex flex-grow items-center space-x-1 hover:text-white transition duration-150">
-  <span class="relative inline-block">
-  <ListItem key={itemIndex} />
-    <span class="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-      1
-    </span>
-  </span>
-</div>; */
-}
